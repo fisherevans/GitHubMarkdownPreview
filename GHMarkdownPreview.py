@@ -49,7 +49,7 @@ def get_github_repo_name(filename):
 def generate_preview(text, repo_name):
     http_header = { 'Content-type': 'application/json' }
     url = 'https://api.github.com/markdown'
-    body = json.dumps({'text': text, 'mode': 'gfm', 'context': repo_name}).encode('utf8')
+    body = json.dumps({'text': text, 'mode': 'markdown'}).encode('utf8')
     if use_curl:
         return call_exe(['curl', url, "-d", body], ".").encode('utf8')
     try:
@@ -66,7 +66,7 @@ class github_markdown_preview_command(sublime_plugin.TextCommand):
             repoName = get_github_repo_name(self.view.file_name())
             path = os.path.dirname(self.view.file_name())
             path_encoded = urllib.parse.quote(path)
-            header = "<head><base href='file://%s/'/></head>" % path_encoded
+            header = "<head><base href='file://%s/'/><link rel='stylesheet' type='text/css' href='https://raw.githubusercontent.com/sindresorhus/github-markdown-css/gh-pages/github-markdown.css'/></head>" % path_encoded
             html = generate_preview(self.view.substr(selection), repoName)
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.html')
             temp_file.write(header.encode("utf-8"))
